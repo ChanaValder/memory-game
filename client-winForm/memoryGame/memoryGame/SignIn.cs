@@ -39,39 +39,46 @@ namespace memoryGame
                 }
 
                 //Post Request for Login
-                var httpWebRequest = (HttpWebRequest)WebRequest.Create(@"http://localhost:52339/Login");
-                httpWebRequest.ContentType = "application/json";
-                httpWebRequest.Method = "POST";
-                using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                try
                 {
-                    NewUser = new User { UserName = name.Text, Age = int.Parse(age.Text) };
-                    string NewUserString = Newtonsoft.Json.JsonConvert.SerializeObject(NewUser, Formatting.None);
-                    streamWriter.Write(NewUserString);
-                    streamWriter.Flush();
-                    streamWriter.Close();
-                }
-                //Gettting response
-                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-
-                //Reading response
-                using (var streamReader = new System.IO.StreamReader(httpResponse.GetResponseStream(), ASCIIEncoding.ASCII))
-                {
-                    string result = streamReader.ReadToEnd();
-                    //If Login succeeded
-                    if (result.Contains("true"))
+                    var httpWebRequest = (HttpWebRequest)WebRequest.Create(@"http://localhost:52339/Login");
+                    httpWebRequest.ContentType = "application/json";
+                    httpWebRequest.Method = "POST";
+                    using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                     {
-                        GlobalProp.CurrentUser = NewUser;
-                        ChoosePartner choosePartner = new ChoosePartner();
-                        choosePartner.Show();
-                        
+                        NewUser = new User { UserName = name.Text, Age = int.Parse(age.Text) };
+                        string NewUserString = Newtonsoft.Json.JsonConvert.SerializeObject(NewUser, Formatting.None);
+                        streamWriter.Write(NewUserString);
+                        streamWriter.Flush();
+                        streamWriter.Close();
                     }
-                    //Printing the matching error
-                    else MessageBox.Show(result);
+                    //Gettting response
+                    var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+
+                    //Reading response
+                    using (var streamReader = new System.IO.StreamReader(httpResponse.GetResponseStream(), ASCIIEncoding.ASCII))
+                    {
+                        string result = streamReader.ReadToEnd();
+                        //If Login succeeded
+                        if (result.Contains("true"))
+                        {
+                            GlobalProp.CurrentUser = NewUser;
+                            ChoosePartner choosePartner = new ChoosePartner();
+                            choosePartner.Show();
+
+                        }
+                        //Printing the matching error
+                        else MessageBox.Show(result);
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("User name is exists, choose another username.");
                 }
             }
             catch
             {
-                MessageBox.Show("Age must be a number!");
+                MessageBox.Show("age must be a number");
             }
 
         }
